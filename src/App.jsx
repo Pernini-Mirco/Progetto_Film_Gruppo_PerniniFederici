@@ -1,35 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { useState } from "react";
+import SearchBar from "./componenti/SearchBar";
+import Card from "./componenti/Card";
+import { searchContent, getDetails } from "./api/tmdb";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [query, setQuery] = useState("");
+  const [type, setType] = useState("movie");
+  const [results, setResults] = useState([]);
+  const [detail, setDetail] = useState(null);
+
+  async function handleSearch() {
+    const data = await searchContent(query, type);
+    setResults(data);
+  }
+
+  async function openDetail(id) {
+    const data = await getDetails(id, type);
+    setDetail(data);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      <h1>FP Catalog</h1>
 
-export default App
+      <select onChange={e => setType(e.target.value)}>
+        <option value="movie">Film</option>
+        <option value="tv">Serie TV</option>
+      </select>
+
+      <SearchBar
+        value={query}
+        onChange={setQuery}
+        onSearch={handleSearch}
+      />
+
+      <div className="grid">
+        {results.map(item => (
+          <Card key={item.id} item={item} onClick={() => openDetail(item.id)} />
+        ))}
+      </div>
+
+      {detail && (
+        <div className="modal" onClick={() => setDetail(null)}>
+          <div className="modal-content">
+            <h2>{detail.title || detail.name}</h2>
+            <p>{detail.overview}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
