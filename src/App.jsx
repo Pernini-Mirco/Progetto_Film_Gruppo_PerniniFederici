@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchBar from "./componenti/SearchBar";
 import Card from "./componenti/Card";
 import Filters from "./componenti/Filters";
 import DetailPopup from "./componenti/DetailPopup";
-import { searchContent, getDetails, discoverContent } from "./api/tmdb";
+import { searchContent, getDetails, discoverContent, getTrendingContent } from "./api/tmdb";
+import "./App.css";
 
 export default function App() {
   const [query, setQuery] = useState("");
@@ -16,6 +17,22 @@ export default function App() {
     yearFrom: "",
     yearTo: ""
   });
+
+  // Carica i film popolari all'avvio
+  useEffect(() => {
+    loadTrendingContent();
+  }, []);
+
+  async function loadTrendingContent() {
+    setLoading(true);
+    try {
+      const data = await getTrendingContent("movie");
+      setResults(data);
+    } catch (error) {
+      console.error("Errore durante il caricamento dei contenuti:", error);
+    }
+    setLoading(false);
+  }
 
   async function handleSearch() {
     if (!query.trim()) {
@@ -35,6 +52,12 @@ export default function App() {
   }
 
   async function handleFilterSearch() {
+    // Verifica se almeno un filtro è impostato
+    if (!filters.genre && !filters.yearFrom && !filters.yearTo) {
+      alert("Imposta almeno un filtro prima di cercare");
+      return;
+    }
+
     setLoading(true);
     try {
       const data = await discoverContent(type, filters);
@@ -64,8 +87,8 @@ export default function App() {
 
   function resetFilters() {
     setFilters({ genre: "", yearFrom: "", yearTo: "" });
-    setResults([]);
     setQuery("");
+    loadTrendingContent();
   }
 
   return (
@@ -83,6 +106,9 @@ export default function App() {
             onChange={e => {
               setType(e.target.value);
               setResults([]);
+              if (e.target.value === "movie") {
+                loadTrendingContent();
+              }
             }}
             className="type-select"
           >
@@ -102,6 +128,7 @@ export default function App() {
         type={type}
         filters={filters}
         onFilterChange={setFilters}
+        onApplyFilters={handleFilterSearch}
       />
 
       <div className="filter-actions">
@@ -121,12 +148,6 @@ export default function App() {
       )}
 
       <div className="results-grid">
-        {results.length === 0 && !loading && (
-          <div className="no-results">
-            <p>🔍 Usa la barra di ricerca o i filtri per trovare contenuti</p>
-          </div>
-        )}
-
         {results.map(item => (
           <Card 
             key={item.id} 

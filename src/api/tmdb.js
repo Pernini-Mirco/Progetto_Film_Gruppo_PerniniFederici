@@ -58,3 +58,17 @@ export async function discoverContent(type, filters = {}) {
     return [];
   }
 }
+
+// Funzione per ottenere i contenuti di tendenza
+export async function getTrendingContent(type = "movie") {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/trending/${type}/week?api_key=${API_KEY}&language=it-IT`
+    );
+    const data = await res.json();
+    return data.results || [];
+  } catch (error) {
+    console.error("Errore nel recupero trending:", error);
+    return [];
+  }
+}

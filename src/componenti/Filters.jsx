@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getGenres } from "../api/tmdb";
 
-export default function Filters({ type, onFilterChange, filters }) {
+export default function Filters({ type, onFilterChange, filters, onApplyFilters }) {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
@@ -13,10 +13,17 @@ export default function Filters({ type, onFilterChange, filters }) {
   }, [type]);
 
   const currentYear = new Date().getFullYear();
-  const years = [];
-  for (let year = currentYear; year >= 1900; year--) {
-    years.push(year);
-  }
+  const minYear = 1900;
+
+  const handleYearFromChange = (e) => {
+    const value = e.target.value;
+    onFilterChange({ ...filters, yearFrom: value });
+  };
+
+  const handleYearToChange = (e) => {
+    const value = e.target.value;
+    onFilterChange({ ...filters, yearTo: value });
+  };
 
   return (
     <div className="filters">
@@ -37,31 +44,31 @@ export default function Filters({ type, onFilterChange, filters }) {
       </div>
 
       <div className="filter-group">
-        <label>Anno da:</label>
-        <select 
-          value={filters.yearFrom || ""} 
-          onChange={(e) => onFilterChange({ ...filters, yearFrom: e.target.value })}
-          className="filter-select"
-        >
-          <option value="">Qualsiasi</option>
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
+        <label>
+          Anno da: {filters.yearFrom || minYear}
+        </label>
+        <input
+          type="range"
+          min={minYear}
+          max={currentYear}
+          value={filters.yearFrom || minYear}
+          onChange={handleYearFromChange}
+          className="year-slider"
+        />
       </div>
 
       <div className="filter-group">
-        <label>Anno a:</label>
-        <select 
-          value={filters.yearTo || ""} 
-          onChange={(e) => onFilterChange({ ...filters, yearTo: e.target.value })}
-          className="filter-select"
-        >
-          <option value="">Qualsiasi</option>
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
+        <label>
+          Anno a: {filters.yearTo || currentYear}
+        </label>
+        <input
+          type="range"
+          min={minYear}
+          max={currentYear}
+          value={filters.yearTo || currentYear}
+          onChange={handleYearToChange}
+          className="year-slider"
+        />
       </div>
     </div>
   );
