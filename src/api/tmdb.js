@@ -72,3 +72,18 @@ export async function getTrendingContent(type = "movie") {
     return [];
   }
 }
+
+// Funzione per cercare sia film che serie TV insieme
+export async function searchMulti(query) {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=it-IT`
+    );
+    const data = await res.json();
+    // Filtra solo film e TV (esclude persone)
+    return data.results.filter(item => item.media_type === "movie" || item.media_type === "tv") || [];
+  } catch (error) {
+    console.error("Errore nella ricerca multi:", error);
+    return [];
+  }
+}

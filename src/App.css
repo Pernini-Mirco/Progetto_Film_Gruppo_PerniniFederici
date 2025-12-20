@@ -450,3 +450,243 @@ body {
     min-width: 100%;
   }
 }
+
+.search-and-filter {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-toggle-btn {
+  padding: 10px 25px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.filter-toggle-btn:hover {
+  background-color: #2980b9;
+}
+
+.results-info {
+  text-align: center;
+  color: #999;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* Popup Filtri */
+.filter-popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.filter-popup-content {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.filter-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 30px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-popup-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: white;
+}
+
+.filter-popup-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-popup-close:hover {
+  transform: rotate(90deg);
+}
+
+.filter-popup-body {
+  padding: 30px;
+}
+
+.filter-popup-group {
+  margin-bottom: 25px;
+}
+
+.filter-popup-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 500;
+}
+
+.filter-popup-group label strong {
+  color: #ffd700;
+}
+
+.filter-popup-select {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.filter-popup-select:hover,
+.filter-popup-select:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+.filter-popup-select option {
+  background-color: #2a2a2a;
+  color: white;
+}
+
+.filter-popup-slider {
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.filter-popup-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+  transition: all 0.2s;
+}
+
+.filter-popup-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8);
+}
+
+.filter-popup-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffd700;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+  transition: all 0.2s;
+}
+
+.filter-popup-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8);
+}
+
+.filter-popup-actions {
+  display: flex;
+  gap: 15px;
+  padding: 20px 30px 30px;
+}
+
+.filter-apply-btn,
+.filter-cancel-btn {
+  flex: 1;
+  padding: 15px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+}
+
+.filter-apply-btn {
+  background-color: #2ecc71;
+  color: white;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+}
+
+.filter-apply-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.filter-cancel-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.filter-cancel-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .search-and-filter {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .filter-toggle-btn {
+    width: 100%;
+  }
+  
+  .filter-popup-content {
+    margin: 0 10px;
+  }
+}

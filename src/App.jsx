@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
+import "./App.css";
 import SearchBar from "./componenti/SearchBar";
 import Card from "./componenti/Card";
-import Filters from "./componenti/Filters";
+import FilterPopup from "./componenti/FilterPopup";
 import DetailPopup from "./componenti/DetailPopup";
-import { searchContent, getDetails, discoverContent, getTrendingContent } from "./api/tmdb";
-import "./App.css";
+import { searchContent, getDetails, discoverContent, getTrendingContent, searchMulti } from "./api/tmdb";
 
 export default function App() {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("movie");
   const [results, setResults] = useState([]);
   const [detail, setDetail] = useState(null);
+  const [detailType, setDetailType] = useState("movie");
   const [loading, setLoading] = useState(false);
+  const [filterPopupOpen, setFilterPopupOpen] = useState(false);
   const [filters, setFilters] = useState({
     genre: "",
     yearFrom: "",
@@ -27,7 +29,7 @@ export default function App() {
     setLoading(true);
     try {
       const data = await getTrendingContent("movie");
-      setResults(data);
+      setResults(data.map(item => ({ ...item, media_type: "movie" })));
     } catch (error) {
       console.error("Errore durante il caricamento dei contenuti:", error);
     }
@@ -42,7 +44,8 @@ export default function App() {
 
     setLoading(true);
     try {
-      const data = await searchContent(query, type);
+      // Cerca sia film che serie TV
+      const data = await searchMulti(query);
       setResults(data);
     } catch (error) {
       console.error("Errore durante la ricerca:", error);
@@ -61,7 +64,7 @@ export default function App() {
     setLoading(true);
     try {
       const data = await discoverContent(type, filters);
-      setResults(data);
+      setResults(data.map(item => ({ ...item, media_type: type })));
     } catch (error) {
       console.error("Errore durante la ricerca filtrata:", error);
       alert("Errore durante la ricerca filtrata");
@@ -69,11 +72,12 @@ export default function App() {
     setLoading(false);
   }
 
-  async function openDetail(id) {
+  async function openDetail(id, mediaType) {
     setLoading(true);
     try {
-      const data = await getDetails(id, type);
+      const data = await getDetails(id, mediaType);
       setDetail(data);
+      setDetailType(mediaType);
     } catch (error) {
       console.error("Errore durante il caricamento dei dettagli:", error);
       alert("Errore durante il caricamento dei dettagli");
@@ -99,45 +103,19 @@ export default function App() {
       </header>
 
       <div className="controls">
-        <div className="type-selector">
-          <label>Tipo di contenuto:</label>
-          <select 
-            value={type} 
-            onChange={e => {
-              setType(e.target.value);
-              setResults([]);
-              if (e.target.value === "movie") {
-                loadTrendingContent();
-              }
-            }}
-            className="type-select"
+        <div className="search-and-filter">
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            onSearch={handleSearch}
+          />
+          <button 
+            className="filter-toggle-btn"
+            onClick={() => setFilterPopupOpen(true)}
           >
-            <option value="movie">🎬 Film</option>
-            <option value="tv">📺 Serie TV</option>
-          </select>
+            🔍 Filtri
+          </button>
         </div>
-
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          onSearch={handleSearch}
-        />
-      </div>
-
-      <Filters 
-        type={type}
-        filters={filters}
-        onFilterChange={setFilters}
-        onApplyFilters={handleFilterSearch}
-      />
-
-      <div className="filter-actions">
-        <button onClick={handleFilterSearch} className="apply-filters-btn">
-          Applica Filtri
-        </button>
-        <button onClick={resetFilters} className="reset-filters-btn">
-          Reset Filtri
-        </button>
       </div>
 
       {loading && (
@@ -147,21 +125,37 @@ export default function App() {
         </div>
       )}
 
-      <div className="results-grid">
-        {results.map(item => (
-          <Card 
-            key={item.id} 
-            item={item} 
-            type={type}
-            onClick={() => openDetail(item.id)} 
-          />
-        ))}
+      <div className="results-info">
+        <p>{results.length} risultati trovati</p>
       </div>
+
+      <div className="results-grid">
+        {results.map(item => {
+          const itemType = item.media_type || type;
+          return (
+            <Card 
+              key={`${itemType}-${item.id}`}
+              item={item} 
+              type={itemType}
+              onClick={() => openDetail(item.id, itemType)} 
+            />
+          );
+        })}
+      </div>
+
+      <FilterPopup 
+        isOpen={filterPopupOpen}
+        onClose={() => setFilterPopupOpen(false)}
+        type={type}
+        filters={filters}
+        onFilterChange={setFilters}
+        onApplyFilters={handleFilterSearch}
+      />
 
       {detail && (
         <DetailPopup 
           detail={detail} 
-          type={type}
+          type={detailType}
           onClose={closeDetail} 
         />
       )}
